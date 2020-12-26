@@ -13,6 +13,7 @@ repositories {
   jcenter()
   maven(url = "https://dl.bintray.com/kotlin/kotlinx")
   maven(url = "https://kotlin.bintray.com/kotlinx/")
+  maven(url = "https://jitpack.io")
   maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
   maven(url = "https://dl.bintray.com/kotlin/kotlin-plugin/")
   maven(url = "https://kotlin.bintray.com/kotlin-dependencies")
@@ -42,8 +43,28 @@ dependencies {
 
   // Use JUnit Jupiter API for testing.
   testImplementation(Deps.Testing.JUnit.Api)
+
   // Use JUnit Jupiter Engine for testing.
   testRuntimeOnly(Deps.Testing.JUnit.Engine)
+
+  testImplementation(Deps.Testing.Kotest.Runner.JUnit5) // for kotest framework
+  testImplementation(Deps.Testing.Kotest.Assertions.Core) // for kotest core jvm assertions
+  testImplementation(Deps.Testing.Kotest.Assertions.Json)
+  testImplementation(Deps.Testing.Kotest.Assertions.Sql)
+  testImplementation(Deps.Testing.Kotest.Assertions.Konform)
+  testImplementation(Deps.Testing.Kotest.Property) // for kotest property test
+  testImplementation(Deps.Testing.Kotest.Extensions.Http)
+  testImplementation(Deps.Testing.Kotest.Extensions.MockServer)
+  testImplementation(Deps.Testing.Kotest.Extensions.TestContainers)
+
+  testImplementation(Deps.Testing.MockK.Common)
+
+  testImplementation(Deps.Kotlin.Test.Common)
+  testImplementation(Deps.Kotlin.Test.Junit)
+  testImplementation(Deps.Kotlin.Test.Junit5)
+  testImplementation(Deps.KotlinX.Coroutines.Core)
+  testImplementation(Deps.KotlinX.Coroutines.Test)
+
 }
 
 tasks.test {

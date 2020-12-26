@@ -3,11 +3,13 @@
  */
 
 plugins {
-    id("im.tony.project.kotlin-library-conventions")
+  id("im.tony.project.kotlin-library-conventions")
 }
 
 dependencies {
-    api(project(":list"))
+  api(project(":list"))
+
+  implementation(Deps.Faker)
 }
 
 val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks
@@ -17,3 +19,4 @@ compileKotlin.kotlinOptions {
   this.languageVersion = "1.4"
   this.apiVersion = "1.4"
 }
+

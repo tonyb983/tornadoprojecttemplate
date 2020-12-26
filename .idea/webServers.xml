@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="3d421553-5df7-4762-861c-476822e1d2ee" name="Local" url="http://localhost">
+        <fileTransfer mountedRoot="S:\FastCode\Templating\Mounted" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+    <groups>
+      <group>
+        <name>DepGroup</name>
+        <servers>
+          <name value="Local" />
+        </servers>
+      </group>
+    </groups>
+  </component>
+</project>

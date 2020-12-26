@@ -1,7 +1,5 @@
 @file:Suppress("unused", "SpellCheckingInspection", "ClassName")
 
-import org.gradle.api.Incubating
-
 object Deps : NotDependency {
   object TestFx : NotDependency {
     const val Core = "org.testfx:testfx-core:${Versions.TestFx}"
@@ -13,9 +11,62 @@ object Deps : NotDependency {
     const val ControlsFxExtensions = "no.tornado:tornadofx-controlsfx:${Versions.ControlsFx.TornadoExtensions}"
   }
 
-  const val ControlsFX = "org.controlsfx:controlsfx:${Versions.ControlsFx.Core}"
+  object JfxLibs : NotDependency {
+    /**
+     * ### JFoenix Material Design Component Library
+     *
+     * [Website](http://www.jfoenix.com/)
+     * [Github](https://github.com/jfoenixadmin/JFoenix)
+     */
+    const val JFoenix = "com.jfoenix:jfoenix:${Versions.JfxLibs.JFoenix}"
 
-  const val ScenicView = "net.raumzeitfalle.fx:scenic-view:${Versions.ScenicView}"
+    /**
+     * ### A Borderless scene for use in JavaFX.
+     *
+     * [Github](https://github.com/goxr3plus/FX-BorderlessScene)
+     */
+    const val BorderlessScene = "com.github.goxr3plus:FX-BorderlessScene:${Versions.BorderlessScene}"
+
+    /**
+     * ### A JavaFX library for Gauges. The main focus of this project is to provide Gauges that can be configured in multiple ways.
+     *
+     * [Github](https://github.com/HanSolo/Medusa)
+     */
+    const val Medusa = "eu.hansolo:Medusa:${Versions.JfxLibs.Medusa}"
+
+    /**
+     * ### A collection of JavaFX controls and utilities.
+     *
+     * [Github](https://github.com/dlsc-software-consulting-gmbh/GemsFX)
+     */
+    const val GemsFx = "com.dlsc.gemsfx:gemsfx:${Versions.JfxLibs.GemsFx}"
+
+    /**
+     * ### A JavaFX library containing tiles for Dashboards.
+     *
+     * [Github](https://github.com/HanSolo/tilesfx)
+     */
+    const val TilesFx = "eu.hansolo:tilesfx:${Versions.JfxLibs.TilesFx}"
+
+    const val ControlsFX = "org.controlsfx:controlsfx:${Versions.ControlsFx.Core}"
+    const val ScenicView = "net.raumzeitfalle.fx:scenic-view:${Versions.ScenicView}"
+
+    object FontAwesomeFx {
+      const val Commons = "de.jensd:fontawesomefx-commons:${Versions.FontAwesomeFx.Commons}"
+      const val Controls = "de.jensd:fontawesomefx-controls:${Versions.FontAwesomeFx.Commons}"
+      const val EmojiOne = "de.jensd:fontawesomefx-emojione:${Versions.FontAwesomeFx.EmojiOne}"
+      const val FontAwesome = "de.jensd:fontawesomefx-fontawesome:${Versions.FontAwesomeFx.FontAwesome}"
+      const val Icons525 = "de.jensd:fontawesomefx-icons525:${Versions.FontAwesomeFx.Icons525}"
+      const val MaterialDesignFont = "de.jensd:fontawesomefx-materialdesignfont:${Versions.FontAwesomeFx.MaterialDesignFont}"
+      const val MaterialIcons = "de.jensd:fontawesomefx-materialicons:${Versions.FontAwesomeFx.MaterialIcons}"
+      const val MaterialStackIcons = "de.jensd:fontawesomefx-materialstackicons:${Versions.FontAwesomeFx.MaterialStackIcons}"
+      const val Octicons = "de.jensd:fontawesomefx-octicons:${Versions.FontAwesomeFx.Octicons}"
+      const val WeatherIcons = "de.jensd:fontawesomefx-weathericons:${Versions.FontAwesomeFx.WeatherIcons}"
+    }
+
+    const val AdvancedBindings = "eu.lestard:advanced-bindings:${Versions.JfxLibs.AdvancedBindings}"
+    const val BootstrapFx = "org.kordamp.bootstrapfx:bootstrapfx-core:${Versions.JfxLibs.BootstrapFx}"
+  }
 
   object JfExtras : NotDependency {
     private const val group = "org.jfxtras"
@@ -44,8 +95,6 @@ object Deps : NotDependency {
     const val JavaFx = "$prefix-javafx:${Versions.iKonli}"
     const val MaterialDesignPack = "$prefix-materialdesign-pack:${Versions.iKonli}"
   }
-
-  const val FontAwesomeFxCommons = "de.jensd:fontawesomefx-commons:${Versions.FontAwesomeFxCommons}"
 
   const val Faker = "io.github.serpro69:kotlin-faker:${Versions.KotlinFaker}"
 
@@ -121,12 +170,13 @@ object Deps : NotDependency {
    */
   object Kotlin : NotDependency {
     private const val group = "org.jetbrains.kotlin"
+    private const val kotlinVersion = Versions.Kotlin.Lang
 
     /**
      * Libraries without version numbers as well as the [Bom] platform dependency
      */
     object WithBom : NotDependency {
-      const val Bom = "$group:kotlin-bom"
+      const val Bom = "$group:kotlin-bom:$kotlinVersion"
 
       /**
        * Kotlin Standard Library
@@ -176,15 +226,19 @@ object Deps : NotDependency {
       private const val prefix = "$group:kotlin-stdlib"
 
       /** org.jetbrains.kotlin:kotlin-stdlib-core:[Versions.Kotlin.Lang] */
-      const val Core = "$prefix:${Versions.Kotlin.Lang}"
+      const val Core = "$prefix:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-stdlib-jdk7:[Versions.Kotlin.Lang] */
-      const val Jdk7 = "$prefix-jdk7:${Versions.Kotlin.Lang}"
+      const val Jdk7 = "$prefix-jdk7:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-stdlib-jdk8:[Versions.Kotlin.Lang] */
-      const val Jdk8 = "$prefix-jdk8:${Versions.Kotlin.Lang}"
+      const val Jdk8 = "$prefix-jdk8:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-stdlib-js:[Versions.Kotlin.Lang] */
-      const val Js = "$prefix-js:${Versions.Kotlin.Lang}"
+      const val Js = "$prefix-js:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-stdlib-common:[Versions.Kotlin.Lang] */
-      const val Common = "$prefix-common:${Versions.Kotlin.Lang}"
+      const val Common = "$prefix-common:$kotlinVersion"
     }
 
     /**
@@ -196,18 +250,24 @@ object Deps : NotDependency {
      */
     object Test : NotDependency {
       private const val prefix = "$group:kotlin-test"
+
       /** org.jetbrains.kotlin:kotlin-test-annotations-common:[Versions.Kotlin.Lang] */
-      const val AnnotationsCommon = "$prefix-annotations-common:${Versions.Kotlin.Lang}"
+      const val AnnotationsCommon = "$prefix-annotations-common:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-test-common:[Versions.Kotlin.Lang] */
-      const val Common = "$prefix-common:${Versions.Kotlin.Lang}"
+      const val Common = "$prefix-common:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-test-js:[Versions.Kotlin.Lang] */
-      const val Js = "$prefix-js:${Versions.Kotlin.Lang}"
+      const val Js = "$prefix-js:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-test-js-runner:[Versions.Kotlin.Lang] */
-      const val JsRunner = "$prefix-js-runner:${Versions.Kotlin.Lang}"
+      const val JsRunner = "$prefix-js-runner:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-test-junit:[Versions.Kotlin.Lang] */
-      const val Junit = "$prefix-junit:${Versions.Kotlin.Lang}"
+      const val Junit = "$prefix-junit:$kotlinVersion"
+
       /** org.jetbrains.kotlin:kotlin-test-junit5:[Versions.Kotlin.Lang] */
-      const val Junit5 = "$prefix-junit5:${Versions.Kotlin.Lang}"
+      const val Junit5 = "$prefix-junit5:$kotlinVersion"
     }
   }
 

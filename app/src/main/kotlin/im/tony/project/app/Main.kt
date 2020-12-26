@@ -3,7 +3,6 @@
  */
 package im.tony.project.app
 
-import im.tony.project.utilities.StringUtils
 import tornadofx.launch
 
 fun main() {

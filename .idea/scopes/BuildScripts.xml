@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="BuildScripts" pattern="file[ProjectTemplate.buildSrc.main]:*/||file[projecttemplate.utilities]:*/||file[projecttemplate.list]:*/||file[projecttemplate.app]:*/" />
+</component>

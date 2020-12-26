@@ -1,21 +1,27 @@
 package im.tony.project.app.views
 
-import im.tony.project.app.Styles
-import javafx.geometry.Pos
+import im.tony.project.app.libext.JfxTestView
 import javafx.scene.Parent
-import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
+import javafx.util.Duration
 import tornadofx.*
 
 class StartingView : View("Starting View") {
+  private val startingSize = 800.0 to 600.0
+  // private val transitionTo: View by find<MainView>()
+
+  init {
+    runLater(1.seconds) {
+      replaceWith<JfxTestView>(ViewTransition.Wipe(Duration.seconds(0.75)))
+    }
+  }
+
   override val root: Parent = pane {
-    vbox(10.0, Pos.CENTER) {
-      spacer(Priority.SOMETIMES)
-      text("Hello Tornado") {
-        style {
-          addClass(Styles.header, Styles.wrapper)
-        }
-      }
-      spacer(Priority.SOMETIMES)
+    rectangle {
+      val (x, y) = startingSize
+      this.width = x
+      this.height = y
+      this.fill = Color.BLACK
     }
   }
 }

@@ -25,9 +25,21 @@ dependencies {
   implementation(project(":utilities"))
   implementation(Deps.TornadoFx.Core)
   implementation(Deps.TornadoFx.ControlsFxExtensions)
-  implementation(Deps.ScenicView)
-  implementation(Deps.ControlsFX)
-  implementation(Deps.FontAwesomeFxCommons)
+  implementation(Deps.JfxLibs.ScenicView)
+  implementation(Deps.JfxLibs.ControlsFX)
+  implementation(Deps.JfxLibs.BorderlessScene)
+  implementation(Deps.JfxLibs.FontAwesomeFx.Commons)
+  implementation(Deps.JfxLibs.FontAwesomeFx.FontAwesome)
+  implementation(Deps.JfxLibs.FontAwesomeFx.Controls)
+  implementation(Deps.JfxLibs.FontAwesomeFx.MaterialDesignFont)
+  implementation(Deps.JfxLibs.FontAwesomeFx.Octicons)
+  implementation(Deps.JfxLibs.FontAwesomeFx.MaterialIcons)
+  implementation(Deps.JfxLibs.Medusa)
+  implementation(Deps.JfxLibs.GemsFx)
+  implementation(Deps.JfxLibs.JFoenix)
+  implementation(Deps.JfxLibs.TilesFx)
+  implementation(Deps.JfxLibs.BootstrapFx)
+  implementation(Deps.JfxLibs.AdvancedBindings)
   implementation(Deps.JfExtras.Controls)
   implementation(Deps.JfExtras.JMetro)
   implementation(Deps.JfExtras.GaugeLinear)
@@ -50,11 +62,14 @@ dependencies {
   implementation(Deps.iKonli.MaterialDesignPack)
   implementation(Deps.iKonli.DevkitIconsPack)
 
+  testImplementation(Deps.JfExtras.TestSupport)
+  testImplementation(Deps.TestFx.Core)
+  testImplementation(Deps.TestFx.JUnit5)
 }
 
 application {
   // Define the main class for the application.
-  mainClass.set("im.tony.project.app.AppKt")
+  mainClass.set("im.tony.project.app.MainKt")
 }
 
 val compileKotlin: org.jetbrains.kotlin.gradle.tasks.KotlinCompile by tasks

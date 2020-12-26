@@ -6,18 +6,46 @@ object Versions {
     const val Core = "1.7.20"
   }
 
+  object JfxLibs {
+    const val BootstrapFx = "0.4.0"
+    const val AdvancedBindings: String = "0.4.0"
+    const val JFoenix = "9.0.10"
+    const val BorderlessScene = "4.4.0"
+    const val Medusa = "11.5"
+    const val GemsFx = "1.23.0"
+    const val TilesFx = "11.45"
+  }
+
+  const val BorderlessScene = "4.4.0"
+
   /** Jafama Version 2.3.2 */
   const val Jafama: String = "2.3.2"
+
   /** RoboElectric Version _ */
   const val RoboElectric: String = ""
+
   /** iKonli Version 12.0.0 */
   const val iKonli: String = "12.0.0"
+
   /** Faker Version 1.6.0-rc.0 */
   const val KotlinFaker = "1.6.0-rc.0"
+
+  object FontAwesomeFx {
+    const val Commons = "11.0"
+    const val EmojiOne = "2.2.7-11"
+    const val FontAwesome = "4.7.0-11"
+    const val Icons525 = "3.0.0-11"
+    const val MaterialDesignFont = "1.7.22-11"
+    const val MaterialIcons = "2.2.0-11"
+    const val MaterialStackIcons = "2.1-11"
+    const val Octicons = "4.3.0-11"
+    const val WeatherIcons = "2.0.10-11"
+  }
   /** FontAwesomeFxCommons Version 11.0 */
-  const val FontAwesomeFxCommons = "11.0"
+
   /** TestFx Version 4.0.16-alpha */
   const val TestFx = "4.0.16-alpha"
+
   /** TestContainers Version 1.15.1 */
   const val TestContainers = "1.15.1"
 
