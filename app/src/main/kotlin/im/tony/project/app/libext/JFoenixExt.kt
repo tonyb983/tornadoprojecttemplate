@@ -4,11 +4,8 @@ package im.tony.project.app.libext
 
 import com.jfoenix.controls.*
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject
-import com.jfoenix.transitions.hamburger.HamburgerBackArrowBasicTransition
-import com.jfoenix.transitions.hamburger.HamburgerBasicCloseTransition
-import com.jfoenix.transitions.hamburger.HamburgerNextArrowBasicTransition
-import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition
-import javafx.beans.binding.BooleanExpression
+import com.jfoenix.transitions.CachedTransition
+import com.jfoenix.transitions.hamburger.*
 import javafx.beans.property.*
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
@@ -22,6 +19,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.Region
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
+import javafx.stage.Window
 import javafx.util.Callback
 import javafx.util.Duration
 import javafx.util.StringConverter
@@ -95,47 +93,85 @@ fun <T> JFXComboBox<T>.bindSelected(property: Property<T>) {
 }
 
 // Hamburger
+sealed class HamburgerTrigger {
+  class LeftClick(val count: Int = 1) : HamburgerTrigger()
+  class RightClick(val count: Int = 1) : HamburgerTrigger()
+  object DoubleClick : HamburgerTrigger()
+  class LongPress(val threshold: Duration = 1.seconds, val consume: Boolean = true) : HamburgerTrigger()
+
+  fun leftClick(count: Int = 1) = LeftClick(count)
+  fun rightClick(count: Int = 1) = RightClick(count)
+  fun doubleClick() = DoubleClick
+  fun longPress(threshold: Duration = 1.seconds, consume: Boolean = true) = LongPress(threshold, consume)
+}
+
 fun EventTarget.jfxHamburger(op: JFXHamburger.() -> Unit = {}) = JFXHamburger().attachTo(this, op)
 
-fun JFXHamburger.useBasicCloseTransition(op: HamburgerBasicCloseTransition.() -> Unit = {}) = this.apply {
-  val transTask = HamburgerBasicCloseTransition(this)
+inline fun <reified T> JFXHamburger.addHamburgerTransition(
+  trigger: HamburgerTrigger = HamburgerTrigger.LeftClick(),
+  transition: HamburgerTransition,
+  modifyTransition: T.() -> Unit = {},
+  crossinline onTriggerAction: T.() -> Unit = {
+    this.rate = this.rate * -1.0
+    this.play()
+  }
+)
+  where T : HamburgerTransition,
+        T : CachedTransition = this.apply {
+  val transTask = transition.getAnimation(this) as T
   transTask.rate = -1.0
-  transTask.apply(op)
-  this.onLeftClick {
-    transTask.rate = transTask.rate * -1.0
-    transTask.play()
+  transTask.apply(modifyTransition)
+  when (trigger) {
+    is HamburgerTrigger.LeftClick -> this.onLeftClick(trigger.count) {
+      onTriggerAction.invoke(transTask)
+    }
+    is HamburgerTrigger.RightClick -> this.onRightClick(trigger.count) {
+      onTriggerAction.invoke(transTask)
+    }
+    is HamburgerTrigger.DoubleClick -> this.onDoubleClick {
+      onTriggerAction.invoke(transTask)
+    }
+    is HamburgerTrigger.LongPress -> this.longpress(trigger.threshold, trigger.consume) {
+      onTriggerAction.invoke(transTask)
+    }
   }
 }
 
-fun JFXHamburger.useSlideCloseTransition(op: HamburgerSlideCloseTransition.() -> Unit = {}) = this.apply {
-  val transTask = HamburgerSlideCloseTransition(this)
-  transTask.rate = -1.0
-  transTask.apply(op)
-  this.onLeftClick {
-    transTask.rate = transTask.rate * -1.0
-    transTask.play()
+inline fun JFXHamburger.useBasicCloseTransition(
+  trigger: HamburgerTrigger = HamburgerTrigger.LeftClick(),
+  modifyTransition: HamburgerBasicCloseTransition.() -> Unit = {},
+  crossinline onTriggerAction: HamburgerBasicCloseTransition.() -> Unit = {
+    this.rate = this.rate * -1.0
+    this.play()
   }
-}
+) = addHamburgerTransition(trigger, HamburgerBasicCloseTransition(), modifyTransition, onTriggerAction)
 
-fun JFXHamburger.useNextArrowTransition(op: HamburgerNextArrowBasicTransition.() -> Unit = {}) = this.apply {
-  val transTask = HamburgerNextArrowBasicTransition(this)
-  transTask.rate = -1.0
-  transTask.apply(op)
-  this.onLeftClick {
-    transTask.rate = transTask.rate * -1.0
-    transTask.play()
+inline fun JFXHamburger.useSlideCloseTransition(
+  trigger: HamburgerTrigger = HamburgerTrigger.LeftClick(),
+  modifyTransition: HamburgerSlideCloseTransition.() -> Unit = {},
+  crossinline onTriggerAction: HamburgerSlideCloseTransition.() -> Unit = {
+    this.rate = this.rate * -1.0
+    this.play()
   }
-}
+) = addHamburgerTransition(trigger, HamburgerSlideCloseTransition(), modifyTransition, onTriggerAction)
 
-fun JFXHamburger.useBackArrowTransition(op: HamburgerBackArrowBasicTransition.() -> Unit = {}) = this.apply {
-  val transTask = HamburgerBackArrowBasicTransition(this)
-  transTask.rate = -1.0
-  transTask.apply(op)
-  this.onLeftClick {
-    transTask.rate = transTask.rate * -1.0
-    transTask.play()
+inline fun JFXHamburger.useNextArrowTransition(
+  trigger: HamburgerTrigger = HamburgerTrigger.LeftClick(),
+  modifyTransition: HamburgerNextArrowBasicTransition.() -> Unit = {},
+  crossinline onTriggerAction: HamburgerNextArrowBasicTransition.() -> Unit = {
+    this.rate = this.rate * -1.0
+    this.play()
   }
-}
+) = addHamburgerTransition(trigger, HamburgerNextArrowBasicTransition(), modifyTransition, onTriggerAction)
+
+inline fun JFXHamburger.useBackArrowTransition(
+  trigger: HamburgerTrigger = HamburgerTrigger.LeftClick(),
+  modifyTransition: HamburgerBackArrowBasicTransition.() -> Unit = {},
+  crossinline onTriggerAction: HamburgerBackArrowBasicTransition.() -> Unit = {
+    this.rate = this.rate * -1.0
+    this.play()
+  }
+) = addHamburgerTransition(trigger, HamburgerBackArrowBasicTransition(), modifyTransition, onTriggerAction)
 
 // Input Fields
 fun EventTarget.jfxTextField(value: String? = null, op: JFXTextField.() -> Unit = {}) = JFXTextField().attachTo(this, op) {
@@ -147,13 +183,13 @@ fun EventTarget.jfxTextField(property: ObservableValue<String>, op: JFXTextField
   op(this)
 }
 
-@JvmName("jfxTextfieldNumber")
+@JvmName("jfxTextFieldNumber")
 fun EventTarget.jfxTextField(property: ObservableValue<Number>, op: JFXTextField.() -> Unit = {}) = jfxTextField().apply {
   bind(property)
   op(this)
 }
 
-@JvmName("jfxTextfieldInt")
+@JvmName("jfxTextFieldInt")
 fun EventTarget.jfxTextField(property: ObservableValue<Int>, op: JFXTextField.() -> Unit = {}) = jfxTextField().apply {
   bind(property)
   op(this)
@@ -187,9 +223,10 @@ fun <S> TableColumn<S, out Number?>.useJfxProgressBar(scope: Scope, afterCommit:
       }
     }
   }
-  (this as TableColumn<S, Number?>).setOnEditCommit {
-    val property = it.tableColumn.getCellObservableValue(it.rowValue) as Property<Number?>
-    property.value = it.newValue?.toDouble()
+  @Suppress("UNCHECKED_CAST")
+  (this as? TableColumn<S, Number?>)?.setOnEditCommit {
+    val property = it.tableColumn.getCellObservableValue(it.rowValue) as? Property<Number?>
+    property?.value = it.newValue?.toDouble()
     afterCommit(it as TableColumn.CellEditEvent<S, Number?>)
   }
 }
@@ -247,103 +284,7 @@ fun EventTarget.jfxSpinner(
   op: JFXSpinner.() -> Unit = {}
 ) = JFXSpinner(startingAngle).attachTo(this, op)
 
-// Tab Pane
-val JFXTabPane.savable: BooleanExpression
-  get() {
-    val savable = SimpleBooleanProperty(true)
-
-    fun updateState() {
-      savable.cleanBind(contentUiComponent<UIComponent>()?.savable ?: SimpleBooleanProperty(Workspace.defaultSavable))
-    }
-
-    val contentChangeListener = ChangeListener<Node?> { _, _, _ -> updateState() }
-
-    updateState()
-
-    selectionModel.selectedItem?.contentProperty()?.addListener(contentChangeListener)
-    selectionModel.selectedItemProperty().addListener { _, oldTab, newTab ->
-      updateState()
-      oldTab?.contentProperty()?.removeListener(contentChangeListener)
-      newTab?.contentProperty()?.addListener(contentChangeListener)
-    }
-
-    return savable
-  }
-
-val JFXTabPane.creatable: BooleanExpression
-  get() {
-    val creatable = SimpleBooleanProperty(true)
-
-    fun updateState() {
-      creatable.cleanBind(contentUiComponent<UIComponent>()?.creatable ?: SimpleBooleanProperty(Workspace.defaultCreatable))
-    }
-
-    val contentChangeListener = ChangeListener<Node?> { _, _, _ -> updateState() }
-
-    updateState()
-
-    selectionModel.selectedItem?.contentProperty()?.addListener(contentChangeListener)
-    selectionModel.selectedItemProperty().addListener { _, oldTab, newTab ->
-      updateState()
-      oldTab?.contentProperty()?.removeListener(contentChangeListener)
-      newTab?.contentProperty()?.addListener(contentChangeListener)
-    }
-
-    return creatable
-  }
-
-val JFXTabPane.deletable: BooleanExpression
-  get() {
-    val deletable = SimpleBooleanProperty(true)
-
-    fun updateState() {
-      deletable.cleanBind(contentUiComponent<UIComponent>()?.deletable ?: SimpleBooleanProperty(Workspace.defaultDeletable))
-    }
-
-    val contentChangeListener = ChangeListener<Node?> { observable, oldValue, newValue -> updateState() }
-
-    updateState()
-
-    selectionModel.selectedItem?.contentProperty()?.addListener(contentChangeListener)
-    selectionModel.selectedItemProperty().addListener { observable, oldTab, newTab ->
-      updateState()
-      oldTab?.contentProperty()?.removeListener(contentChangeListener)
-      newTab?.contentProperty()?.addListener(contentChangeListener)
-    }
-
-    return deletable
-  }
-
-val JFXTabPane.refreshable: BooleanExpression
-  get() {
-    val refreshable = SimpleBooleanProperty(true)
-
-    fun updateState() {
-      refreshable.cleanBind(contentUiComponent<UIComponent>()?.refreshable ?: SimpleBooleanProperty(Workspace.defaultRefreshable))
-    }
-
-    val contentChangeListener = ChangeListener<Node?> { _, _, _ -> updateState() }
-
-    updateState()
-
-    selectionModel.selectedItem?.contentProperty()?.addListener(contentChangeListener)
-    selectionModel.selectedItemProperty().addListener { observable, oldTab, newTab ->
-      updateState()
-      oldTab?.contentProperty()?.removeListener(contentChangeListener)
-      newTab?.contentProperty()?.addListener(contentChangeListener)
-    }
-
-    return refreshable
-  }
-
-inline fun <reified T : UIComponent> JFXTabPane.contentUiComponent(): T? = selectionModel.selectedItem?.content?.uiComponent()
-fun JFXTabPane.onDelete() = contentUiComponent<UIComponent>()?.onDelete()
-fun JFXTabPane.onSave() = contentUiComponent<UIComponent>()?.onSave()
-fun JFXTabPane.onCreate() = contentUiComponent<UIComponent>()?.onCreate()
-fun JFXTabPane.onRefresh() = contentUiComponent<UIComponent>()?.onRefresh()
-fun JFXTabPane.onNavigateBack() = contentUiComponent<UIComponent>()?.onNavigateBack() ?: true
-fun JFXTabPane.onNavigateForward() = contentUiComponent<UIComponent>()?.onNavigateForward() ?: true
-
+// JFX Tabs / TabPane
 fun JFXTabPane.tab(text: String? = null, tag: Any? = null, op: Tab.() -> Unit = {}): Tab {
   val tab = Tab(text ?: tag?.toString())
   tab.tag = tag
@@ -353,12 +294,12 @@ fun JFXTabPane.tab(text: String? = null, tag: Any? = null, op: Tab.() -> Unit = 
 
 // Toggle Button
 /**
- * Create a togglebutton inside the current or given toggle group. The optional value parameter will be matched against
+ * Create a toggleButton inside the current or given toggle group. The optional value parameter will be matched against
  * the extension property `selectedValueProperty()` on Toggle Group. If the #ToggleGroup.selectedValueProperty is used,
  * it's value will be updated to reflect the value for this radio button when it's selected.
  *
  * Likewise, if the `selectedValueProperty` of the ToggleGroup is updated to a value that matches the value for this
- * togglebutton, it will be automatically selected.
+ * toggleButton, it will be automatically selected.
  */
 fun EventTarget.jfxToggleButton(
   text: String? = null,
@@ -429,6 +370,7 @@ class JFXListCellCache<T>(private val cacheProvider: (T) -> Node) {
   fun getOrCreateNode(value: T) = store.getOrPut(value, { cacheProvider(value) })
 }
 
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class JFXListCellFragment<T> : ItemFragment<T>() {
   val cellProperty: ObjectProperty<JFXListCell<T>?> = SimpleObjectProperty()
   var cell by cellProperty
@@ -655,10 +597,12 @@ fun EventTarget.jfxDialog(
 ) = JFXDialog(dialogContainer, content, transitionType, overlayClose).attachTo(this, op)
 
 // Popup
+@Deprecated("Not working yet.")
 fun EventTarget.jfxPopup(
   op: JFXPopup.() -> Unit
 ) = JFXPopup().apply(op)
 
+@Deprecated("Not working yet.")
 fun EventTarget.jfxPopup(
   content: Region,
   op: JFXPopup.() -> Unit
@@ -689,9 +633,29 @@ fun EventTarget.jfxNodesList(
 ) = JFXNodesList().attachTo(this, op)
 
 // Alert
+fun Node.jfxAlertWithContents(
+  show: Boolean = true,
+  window: Window? = FX.primaryStage.scene?.window,
+  op: JFXAlert<Unit>.() -> Array<Node>
+): JFXAlert<Unit> = JFXAlert<Unit>(window).apply {
+  this.setContent(*op.invoke(this))
+}.also {
+  if (show) it.show()
+}
+
+fun Node.jfxAlertWithContent(show: Boolean = true, window: Window? = FX.primaryStage.scene?.window, op: JFXAlert<Unit>.() -> Node): JFXAlert<Unit> =
+  JFXAlert<Unit>(window).apply {
+    this.setContent(op.invoke(this))
+  }.also {
+    if (show) it.show()
+  }
+
 fun Node.jfxAlertUnit(op: JFXAlert<Unit>.() -> Unit = {}) = JFXAlert<Unit>().apply(op)
 fun Node.jfxAlertStandard(op: JFXAlert<ButtonType>.() -> Unit = {}) = JFXAlert<ButtonType>().apply(op)
 fun <TResult : Any?> Node.jfxAlert(op: JFXAlert<TResult>.() -> Unit = {}) = JFXAlert<TResult>().apply(op)
+fun Node.jfxAlertUnit(window: Window?, op: JFXAlert<Unit>.() -> Unit = {}) = JFXAlert<Unit>(window).apply(op)
+fun Node.jfxAlertStandard(window: Window?, op: JFXAlert<ButtonType>.() -> Unit = {}) = JFXAlert<ButtonType>(window).apply(op)
+fun <TResult : Any?> Node.jfxAlert(window: Window?, op: JFXAlert<TResult>.() -> Unit = {}) = JFXAlert<TResult>(window).apply(op)
 
 // ChipView
 fun <T> EventTarget.jfxChipView(
@@ -705,6 +669,7 @@ fun <T> EventTarget.jfxChipView(
 fun EventTarget.jfxMasonPane(
   op: JFXMasonryPane.() -> Unit
 ) = JFXMasonryPane().attachTo(this, op) {
+  @Suppress("INACCESSIBLE_TYPE")
   it.layoutMode = JFXMasonryPane.LayoutMode.MASONRY
 }
 
@@ -712,6 +677,7 @@ fun EventTarget.jfxMasonPane(
 fun EventTarget.jfxBinPackingPane(
   op: JFXMasonryPane.() -> Unit
 ) = JFXMasonryPane().attachTo(this, op) {
+  @Suppress("INACCESSIBLE_TYPE")
   it.layoutMode = JFXMasonryPane.LayoutMode.BIN_PACKING
 }
 

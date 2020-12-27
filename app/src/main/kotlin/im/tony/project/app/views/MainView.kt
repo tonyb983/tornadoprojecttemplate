@@ -1,7 +1,5 @@
 package im.tony.project.app.views
 
-import im.tony.project.app.libext.defaultTiles
-import im.tony.project.app.libext.jfxMasonPane
 import im.tony.project.utilities.getRandomQuote
 import tornadofx.View
 import tornadofx.stackpane
@@ -21,10 +19,5 @@ class MainView : View("My View") {
 
   override val root = stackpane {
     setPrefSize(startingSize.first, startingSize.second)
-    jfxMasonPane {
-      defaultTiles().percentageTile()
-      defaultTiles().clockTile()
-      defaultTiles().gaugeTile()
-    }
   }
 }
