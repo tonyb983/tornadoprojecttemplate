@@ -1,7 +1,7 @@
 package im.tony.project.app
 
 import com.goxr3plus.fxborderlessscene.borderless.BorderlessScene
-import im.tony.project.app.views.StartingView
+import im.tony.project.app.views.LoadingView
 import javafx.scene.Scene
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
@@ -17,7 +17,7 @@ import tornadofx.UIComponent
 import tornadofx.singleAssign
 
 
-class TornadoApp : App(StartingView::class, Styles::class) {
+class TornadoApp : App(LoadingView::class, Styles::class) {
   var stage: Stage by singleAssign()
   var borderlessScene: BorderlessScene by singleAssign(SingleAssignThreadSafetyMode.SYNCHRONIZED)
   private val scenicViewShortcut = KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN)

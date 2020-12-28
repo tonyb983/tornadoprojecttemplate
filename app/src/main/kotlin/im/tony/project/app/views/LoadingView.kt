@@ -1,6 +1,5 @@
 package im.tony.project.app.views
 
-import im.tony.project.app.libext.JfxTestView
 import im.tony.project.app.libext.skipOnClick
 import javafx.animation.Interpolator
 import javafx.scene.Parent
@@ -10,11 +9,11 @@ import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
 import tornadofx.*
 
-class StartingView : View("Starting View") {
+class LoadingView : View("Starting View") {
   private val startingSize = 800.0 to 600.0
   // private val transitionTo: View by find<MainView>()
 
-  private fun loadMainView() = replaceWith<JfxTestView>(ViewTransition.FadeThrough(3.seconds))
+  private fun loadMainView() = replaceWith<MainView>(ViewTransition.FadeThrough(3.seconds))
 
   override val root: Parent = stackpane {
     fitToParentSize()
